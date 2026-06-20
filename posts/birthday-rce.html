@@ -109,7 +109,7 @@
 
 <h3>Background</h3>
 
-<p>The CMS ships with a <strong>Droplets</strong> feature — a system for creating reusable PHP code snippets that can be embedded anywhere on the site using simple tags (e.g. <code>[[OneLiner]]</code>). One of the built-in droplets is called <strong>Oneliner</strong>, designed to generate random one-liner text on a page.</p>
+<p>The CMS ships with a <strong>Droplets</strong> feature — a system for creating reusable PHP code snippets that can be embedded anywhere on the site using simple tags (e.g.[[OneLiner]]). One of the built-in droplets is called <strong>Oneliner</strong>, designed to generate random one-liner text on a page.</p>
 
 <p>Administrators can open and edit any droplet's code directly from the admin panel through a web-based PHP editor. On the surface, this is a legitimate power-user feature. The problem is in what happens when you hit <strong>Save</strong>.</p>
 
@@ -122,8 +122,8 @@
 <p>The full attack chain:</p>
 
 <ol>
-<li>Admin submits a PHP payload via a <code>save_droplet</code> POST request to the save handler</li>
-<li>The application writes it directly to the Oneliner droplet's <code>.php</code> file on disk</li>
+<li>Admin submits a PHP payload via a save_droplet POST request to the save handler</li>
+<li>The application writes it directly to the Oneliner droplet's .php file on disk</li>
 <li>That file is publicly reachable at a predictable URL — no auth required to visit it</li>
 </ol>
 
