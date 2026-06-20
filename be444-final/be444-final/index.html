@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>be444's blog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="sidebar">
+  <a href="index.html" class="avatar">b4</a>
+  <a href="index.html" class="site-title">be444's blog</a>
+  <span class="site-subtitle">security research &amp; writeups</span>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a href="index.html" class="active">⌂ Home</a></li>
+      <li><a href="posts.html">✦ Posts</a></li>
+      <li class="has-submenu" id="machines-menu">
+        <a onclick="toggleMachines(event)">⚙ Machines <span class="arrow">▶</span></a>
+        <ul class="submenu" id="machines-sub">
+          <li><a href="machines/linux.html">🐧 Linux</a></li>
+          <li><a href="machines/windows.html">🪟 Windows</a></li>
+        </ul>
+      </li>
+      <li><a href="tags.html"># Tags</a></li>
+      <li><a href="about.html">~ About</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-links">
+    <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<div id="main">
+  <div class="home-header">
+    <h1>be444's blog</h1>
+    <p>Security research, vulnerability writeups, and machine walkthroughs.</p>
+  </div>
+
+  <div class="posts-list">
+    <h2>Recent Posts</h2>
+
+    <div class="post-item">
+      <div class="post-item-date">2026</div>
+      <div class="post-item-content">
+        <h3><a href="posts/birthday-rce.html">Two RCE Vulnerabilities I Found on My Birthday Evening</a></h3>
+        <p>A casual evening of bug hunting turned into two remote code execution vulnerabilities — both in the same PHP-based CMS.</p>
+        <div class="tags">
+          <span class="tag">#rce</span>
+          <span class="tag">#php</span>
+          <span class="tag">#cms</span>
+          <span class="tag">#code-injection</span>
+          <span class="tag">#file-upload</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleMachines(e) {
+  e.preventDefault();
+  const menu = document.getElementById('machines-menu');
+  const sub = document.getElementById('machines-sub');
+  menu.classList.toggle('open');
+  sub.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

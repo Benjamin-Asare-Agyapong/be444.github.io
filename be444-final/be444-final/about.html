@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — be444's blog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="sidebar">
+  <a href="index.html" class="avatar">b4</a>
+  <a href="index.html" class="site-title">be444's blog</a>
+  <span class="site-subtitle">security research &amp; writeups</span>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a href="index.html">⌂ Home</a></li>
+      <li><a href="posts.html">✦ Posts</a></li>
+      <li class="has-submenu" id="machines-menu">
+        <a onclick="toggleMachines(event)">⚙ Machines <span class="arrow">▶</span></a>
+        <ul class="submenu" id="machines-sub">
+          <li><a href="machines/linux.html">🐧 Linux</a></li>
+          <li><a href="machines/windows.html">🪟 Windows</a></li>
+        </ul>
+      </li>
+      <li><a href="tags.html"># Tags</a></li>
+      <li><a href="about.html" class="active">~ About</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-links">
+    <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<div id="main">
+  <div class="post-wrap">
+    <div class="post-header">
+      <h1>About</h1>
+    </div>
+    <div class="post-body">
+      <p>Hey, I'm <strong>Benjamin Asare Agyapong</strong>, also known as <strong>be444</strong>. I'm a student with a deep passion for cybersecurity — specifically breaking things, understanding how they work, and documenting the process.</p>
+
+      <p>I'm an active CTF player and spend a lot of my time grinding machines on <a href="https://www.hackthebox.com" target="_blank">HackTheBox</a>, <a href="https://echoctf.red" target="_blank">EchoCTF</a>, and <a href="https://hacksmarter.org" target="_blank">HackSmarter</a>. There's something about the moment a shell drops that never gets old. Each machine is a puzzle — a locked box with secrets inside — and I don't stop until I've cracked it open.</p>
+
+      <p>Beyond machines, I actively hunt for vulnerabilities in real-world software. The two RCE vulnerabilities I found in a PHP-based CMS on my birthday evening are a good example of what happens when I get curious and start poking at things. That's the spirit that drives everything on this blog.</p>
+
+      <h2>What I Do</h2>
+      <ul>
+        <li>🔍 <strong>Vulnerability Research</strong> — finding and responsibly disclosing security flaws in open-source software</li>
+        <li>🧩 <strong>CTF Competitions</strong> — competing in Capture The Flag events, sharpening skills across web, binary, and network challenges</li>
+        <li>🖥️ <strong>Machine Pwning</strong> — rooting machines on HackTheBox, EchoCTF, and HackSmarter across Linux and Windows environments</li>
+        <li>📝 <strong>Writing</strong> — documenting findings here so others can learn from the same rabbit holes I fall into</li>
+      </ul>
+
+      <h2>My Approach</h2>
+      <p>I believe the best way to learn security is by doing — not just reading. Every machine I root, every vulnerability I find, and every rabbit hole I go down teaches me something that no textbook could. I try to write my findings in a way that's approachable without sacrificing technical depth, because I know how frustrating it is to find a writeup that skips the parts that actually matter.</p>
+
+      <p>I'm still learning — every single day. And I think that's the most honest thing a security person can say.</p>
+
+      <h2>Platforms</h2>
+      <ul>
+        <li>🟩 <strong>HackTheBox</strong> — my main platform for machine practice and Pro Labs</li>
+        <li>🔴 <strong>EchoCTF</strong> — competitive CTF machines with a great community</li>
+        <li>🔵 <strong>HackSmarter</strong> — focused skill-building in a hands-on environment</li>
+      </ul>
+
+      <h2>Find Me</h2>
+      <ul>
+        <li>GitHub: <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">Benjamin-Asare-Agyapong</a></li>
+        <li>HackTheBox: <a href="https://www.hackthebox.com/profile" target="_blank">be444</a></li>
+      </ul>
+
+      <blockquote>
+        "The quieter you become, the more you are able to hear." — Ram Dass<br/>
+        <span style="font-size:12px; opacity:0.6;">// also applies to reading source code</span>
+      </blockquote>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleMachines(e) {
+  e.preventDefault();
+  const menu = document.getElementById('machines-menu');
+  const sub = document.getElementById('machines-sub');
+  menu.classList.toggle('open');
+  sub.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

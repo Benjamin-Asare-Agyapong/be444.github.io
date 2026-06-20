@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tags — be444's blog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="sidebar">
+  <a href="index.html" class="avatar">b4</a>
+  <a href="index.html" class="site-title">be444's blog</a>
+  <span class="site-subtitle">security research &amp; writeups</span>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a href="index.html">⌂ Home</a></li>
+      <li><a href="posts.html">✦ Posts</a></li>
+      <li class="has-submenu" id="machines-menu">
+        <a onclick="toggleMachines(event)">⚙ Machines <span class="arrow">▶</span></a>
+        <ul class="submenu" id="machines-sub">
+          <li><a href="machines/linux.html">🐧 Linux</a></li>
+          <li><a href="machines/windows.html">🪟 Windows</a></li>
+        </ul>
+      </li>
+      <li><a href="tags.html" class="active"># Tags</a></li>
+      <li><a href="about.html">~ About</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-links">
+    <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<div id="main">
+  <div class="page-header">
+    <h1>Tags</h1>
+    <p>Browse posts by tag.</p>
+  </div>
+
+  <div class="posts-list">
+    <h2>All Tags</h2>
+    <div style="padding: 1rem 0; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+      <a href="#" class="tag" style="font-size:13px; padding: 5px 12px;">#rce</a>
+      <a href="#" class="tag" style="font-size:13px; padding: 5px 12px;">#php</a>
+      <a href="#" class="tag" style="font-size:13px; padding: 5px 12px;">#cms</a>
+      <a href="#" class="tag" style="font-size:13px; padding: 5px 12px;">#code-injection</a>
+      <a href="#" class="tag" style="font-size:13px; padding: 5px 12px;">#file-upload</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleMachines(e) {
+  e.preventDefault();
+  const menu = document.getElementById('machines-menu');
+  const sub = document.getElementById('machines-sub');
+  menu.classList.toggle('open');
+  sub.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

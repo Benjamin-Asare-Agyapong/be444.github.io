@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linux Machines — be444's blog</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+<div id="sidebar">
+  <a href="../index.html" class="avatar">b4</a>
+  <a href="../index.html" class="site-title">be444's blog</a>
+  <span class="site-subtitle">security research &amp; writeups</span>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a href="../index.html">⌂ Home</a></li>
+      <li><a href="../posts.html">✦ Posts</a></li>
+      <li class="has-submenu open" id="machines-menu">
+        <a onclick="toggleMachines(event)">⚙ Machines <span class="arrow">▶</span></a>
+        <ul class="submenu open" id="machines-sub">
+          <li><a href="linux.html" class="active">🐧 Linux</a></li>
+          <li><a href="windows.html">🪟 Windows</a></li>
+        </ul>
+      </li>
+      <li><a href="../tags.html"># Tags</a></li>
+      <li><a href="../about.html">~ About</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-links">
+    <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<div id="main">
+  <div class="page-header">
+    <h1>Machines</h1>
+    <p>Machine writeups — detailed walkthroughs of CTF and lab machines.</p>
+  </div>
+
+  <div class="machines-tabs">
+    <a href="linux.html" class="active">🐧 Linux</a>
+    <a href="windows.html">🪟 Windows</a>
+  </div>
+
+  <div class="machines-content">
+    <h2>Linux Machines</h2>
+
+    <div class="empty-state">
+      <div class="icon">🐧</div>
+      <p>No Linux writeups yet.</p>
+      <small>// coming soon — check back later</small>
+    </div>
+
+    <!-- When you add a machine, use this template:
+    <div class="machine-item">
+      <div class="machine-os-icon linux">🐧</div>
+      <div class="machine-info">
+        <h3><a href="linux/machine-name.html">Machine Name</a></h3>
+        <div class="machine-meta">
+          <span>HackTheBox</span>
+          <span>2026</span>
+          <span class="diff-badge diff-easy">Easy</span>
+        </div>
+      </div>
+    </div>
+    -->
+  </div>
+</div>
+
+<script>
+function toggleMachines(e) {
+  e.preventDefault();
+  const menu = document.getElementById('machines-menu');
+  const sub = document.getElementById('machines-sub');
+  menu.classList.toggle('open');
+  sub.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
